@@ -122,7 +122,9 @@ class BaseRepository {
   }
 
   deleteAllByCriterias (where, options = {}) {
-    return this.sequelizeModel.destroy(Object.assign(options, { where }))
+    const databaseWhere = this.mapper.toDatabase(where)
+
+    return this.sequelizeModel.destroy(Object.assign(options, { where: databaseWhere }))
   }
 
   resolveNullField (value) {
@@ -157,7 +159,9 @@ class BaseRepository {
   }
 
   findOneByCriterias (where) {
-    return this.findOneBy({ where, raw: true })
+    const databaseWhere = this.mapper.toDatabase(where)
+
+    return this.findOneBy({ where: databaseWhere, raw: true })
   }
 
   findAllBy (options) {
@@ -166,11 +170,16 @@ class BaseRepository {
 
   findAllByCriterias (where, options = {}) {
     const { paranoid = true } = options
-    return this.findAllBy({ where, raw: true, paranoid })
+
+    const databaseWhere = this.mapper.toDatabase(where)
+
+    return this.findAllBy({ where: databaseWhere, raw: true, paranoid })
   }
 
   countByCriterias (where) {
-    return this.sequelizeModel.count({ where })
+    const databaseWhere = this.mapper.toDatabase(where)
+
+    return this.sequelizeModel.count({ where: databaseWhere })
   }
 }
 

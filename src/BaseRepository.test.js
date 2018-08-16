@@ -120,9 +120,15 @@ describe('BaseRepository', () => {
     describe('#deleteAllByCriterias', () => {
       it('deletes all instances matching a criteria', async () => {
         const criteria = { field: 'value' }
+        const remmapedCriteria = { anotherField: 'value' }
+
+        mapper.toDatabase = mock()
+          .once()
+          .withExactArgs(criteria)
+          .returns(remmapedCriteria)
 
         sequelizeModel.destroy = mock()
-          .withExactArgs({ where: { field: 'value' } })
+          .withExactArgs({ where: remmapedCriteria })
           .resolves('delete result')
 
         const result = await repository.deleteAllByCriterias(criteria)
@@ -133,9 +139,15 @@ describe('BaseRepository', () => {
       it('deletes all instances matching a criteria, with options', async () => {
         const criteria = { field: 'value' }
         const options = { force: true }
+        const remmapedCriteria = { anotherField: 'value' }
+
+        mapper.toDatabase = mock()
+          .once()
+          .withExactArgs(criteria)
+          .returns(remmapedCriteria)
 
         sequelizeModel.destroy = mock()
-          .withExactArgs({ where: { field: 'value' }, force: true })
+          .withExactArgs({ where: remmapedCriteria, force: true })
           .resolves('delete result')
 
         const result = await repository.deleteAllByCriterias(criteria, options)
@@ -360,9 +372,16 @@ describe('BaseRepository', () => {
     describe('#countByCriterias', () => {
       it('counts the number of registers, given criteria', () => {
         const criterias = 'criterias'
+        const remmapedCriterias = 'remmaped criterias'
+
+        mapper.toDatabase = mock()
+          .once()
+          .withExactArgs(criterias)
+          .returns(remmapedCriterias)
+
         sequelizeModel.count = mock()
           .once()
-          .withExactArgs({ where: criterias })
+          .withExactArgs({ where: remmapedCriterias })
           .returns('count result')
 
         expect(repository.countByCriterias(criterias)).to.equal('count result')
@@ -397,9 +416,15 @@ describe('BaseRepository', () => {
       describe('#findAllByCriterias', () => {
         it('Finds registers which are not soft-deleted ', () => {
           const where = { field: 'anyWhere condition' }
+          const databaseWhere = { changedField: 'anyWhere condition' }
+
+          mapper.toDatabase = mock()
+            .once()
+            .withExactArgs(where)
+            .returns(databaseWhere)
 
           mockRepository.expects('findAllBy')
-            .withExactArgs({ where, raw: true, paranoid: true })
+            .withExactArgs({ where: databaseWhere, raw: true, paranoid: true })
             .returns('mock result')
 
           expect(repository.findAllByCriterias(where)).to.equal('mock result')
@@ -407,9 +432,15 @@ describe('BaseRepository', () => {
 
         it('Finds registers ignoring the soft-delete flag', () => {
           const where = { field: 'anyWhere condition' }
+          const databaseWhere = { changedField: 'anyWhere condition' }
+
+          mapper.toDatabase = mock()
+            .once()
+            .withExactArgs(where)
+            .returns(databaseWhere)
 
           mockRepository.expects('findAllBy')
-            .withExactArgs({ where, raw: true, paranoid: false })
+            .withExactArgs({ where: databaseWhere, raw: true, paranoid: false })
             .returns('mock result')
 
           expect(repository.findAllByCriterias(where, { paranoid: false })).to.equal('mock result')
@@ -418,9 +449,15 @@ describe('BaseRepository', () => {
 
       it('finds one by criterias', () => {
         const where = { field: 'anyWhere condition' }
+        const databaseWhere = { changedField: 'anyWhere condition' }
+
+        mapper.toDatabase = mock()
+          .once()
+          .withExactArgs(where)
+          .returns(databaseWhere)
 
         mockRepository.expects('findOneBy')
-          .withExactArgs({ where, raw: true })
+          .withExactArgs({ where: databaseWhere, raw: true })
           .returns('mock result')
 
         expect(repository.findOneByCriterias(where)).to.equal('mock result')
